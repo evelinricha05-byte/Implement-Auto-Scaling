@@ -129,8 +129,3 @@ Run the following command inside EC2 to increase CPU load:
 ```bash
 yes > /dev/null &
 
-
-
-aws-autoscaling/
-├── README.md
-└── screenshots/
