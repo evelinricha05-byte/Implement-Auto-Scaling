@@ -60,7 +60,76 @@ yum install -y httpd
 systemctl start httpd
 systemctl enable httpd
 echo "Auto Scaling Instance" > /var/www/html/index.html
+
+## 🧱 Step 2: Create an Application Load Balancer (ALB)
+
+1. Go to **EC2 → Load Balancers**
+2. Click **Create Load Balancer**
+3. Select **Application Load Balancer**
+4. Configure:
+   - Scheme: Internet-facing
+   - IP address type: IPv4
+   - VPC: Select your VPC
+   - Availability Zones: Select at least 2 public subnets
+5. Create a **Target Group**:
+   - Target type: Instance
+   - Protocol: HTTP
+   - Port: 80
+   - Health check path: `/`
+6. Attach the Target Group to the Load Balancer
+7. Create the Load Balancer ✅
+
+---
+
+## 🧱 Step 3: Create Auto Scaling Group (ASG)
+
+1. Go to **EC2 → Auto Scaling Groups**
+2. Click **Create Auto Scaling Group**
+3. Enter ASG name
+4. Select the **Launch Template**
+5. Choose:
+   - VPC
+   - Multiple subnets (recommended)
+6. Attach the **Application Load Balancer**
+7. Select the **Target Group**
+8. Configure capacity:
+   - Minimum: 1
+   - Desired: 1
+   - Maximum: 3
+9. Create Auto Scaling Group ✅
+
+---
+
+## 📊 Step 4: Configure Scaling Policy
+
+### Target Tracking Scaling Policy
+- Metric: Average CPU Utilization
+- Target value: 50%
+
+Auto Scaling automatically:
+- Scales out when CPU > 50%
+- Scales in when CPU < 50%
+
+---
+
+## 📈 Step 5: Monitoring with CloudWatch
+
+- Go to **CloudWatch → Metrics**
+- Monitor:
+  - CPU Utilization
+  - InService instances
+  - Healthy & Unhealthy instances
+- Auto Scaling responds to alarms automatically
+
+---
+
+## 🧪 Step 6: Test Auto Scaling
+
+Run the following command inside EC2 to increase CPU load:
+```bash
 yes > /dev/null &
+
+
 
 aws-autoscaling/
 ├── README.md
